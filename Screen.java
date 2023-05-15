@@ -4,6 +4,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+/**
+ * This class handles all to do with displaying the GUI of the game and receives user input.
+ */
 public class Screen extends JFrame implements KeyListener {
     //dimentions
     int width, height;
@@ -23,14 +26,18 @@ public class Screen extends JFrame implements KeyListener {
     private Board board;
 
 
-    //snake
-    //ArrayList<Point> snake;
-
     //tile size
     public static final int TILE_SIZE = 16;
 
     SnakeGame snakeGame;
 
+    /**
+     * Create new screen object which will display the GUI of the game
+     * @param width width of game screen
+     * @param height height of game screen
+     * @param board reference to board object
+     * @param snakeGame reference to snakeGame object
+     */
     Screen (int width, int height, Board board, SnakeGame snakeGame){
         this.snakeGame = snakeGame;
         this.width = width;
@@ -62,44 +69,61 @@ public class Screen extends JFrame implements KeyListener {
 
         this.add(gameInformation, BorderLayout.SOUTH);
 
-        this.addKeyListener(this);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Handle the CLOSE button
+        //Configure our JFrame
+
+        this.addKeyListener(this); //Add our keyListener
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Handle the CLOSE button
         setTitle("Snake game - Tom Chiavegato");
         pack(); // pack all the components in the JFrame
         setVisible(true); // show it
-        this.setResizable(false);
-        canvas.repaint();
+        this.setResizable(false); //Non-resizable
+        canvas.repaint(); //Show the first frame
         this.setFocusable(true);
         System.out.println(requestFocusInWindow()); // set the focus to JFrame to receive KeyEvent
     }
 
+    /**
+     * Updates the JFrame window based off of board state and time parameter
+     * @param time time elapsed since game has started in seconds
+     */
     void updateScreen(double time){
-        score.setText("Score (snake size): "+(snakeGame.board.snake.size()-1));
+        score.setText("Score (snake size): "+(board.snake.size()-1));
         gameTime.setText(String.format("Time: %.1f", time));
         canvas.repaint();
 
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
+    /**
+     * Invoked when a key is pressed, passes argument to the other keyPressed method in snakeGame
+     * @param e the event to be processed
+     */
     @Override
     public void keyPressed(KeyEvent e) {
        //System.out.println(e.getKeyChar());
         snakeGame.keyPressed(e);
     }
 
+    //Unused methods from keyListener interface
+    @Override
+    public void keyTyped(KeyEvent e) {}
     @Override
     public void keyReleased(KeyEvent e) {}
 
+    /**
+     * Class for managing the game screen
+     */
     class DrawCanvas extends JPanel {
+        /**
+         * Update the screen in window
+         * @param g the <code>Graphics</code> object to protect
+         */
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            //set Background
+            //Set background to black
             setBackground(Color.BLACK);
 
-            //draw snake
+            //Draw snake
+
             g.setColor(Color.WHITE);
 
             ArrayList<Point> snake = board.getSnake();
@@ -108,7 +132,8 @@ public class Screen extends JFrame implements KeyListener {
                 g.fillRect(segment.x*TILE_SIZE, TILE_SIZE*(height-segment.y), TILE_SIZE, TILE_SIZE);
             }
 
-            //draw food (apples)
+            //Draw food
+
             g.setColor(Color.RED);
 
             ArrayList<Point> food = board.getFood();
@@ -116,25 +141,6 @@ public class Screen extends JFrame implements KeyListener {
                 Point foodPiece = food.get(i);
                 g.fillRect(foodPiece.x*TILE_SIZE, TILE_SIZE*(height-foodPiece.y), TILE_SIZE, TILE_SIZE);
             }
-
-            /*
-            for(Point pt : board.getSnake()){
-                g.fillRect(pt.x*TILE_SIZE, TILE_SIZE*(height-pt.y), TILE_SIZE, TILE_SIZE);
-                System.out.println(pt);
-                System.out.printf("x: %d y: %d w: %d h: %d \n", pt.x*TILE_SIZE, TILE_SIZE*(height-pt.y), TILE_SIZE, TILE_SIZE);
-                System.out.printf("WIDTH: %d HEIGHT: %d\n", width, height);
-            }
-            System.out.println("\n\n");*/
-
-
-            //draw apples
-            //<draw>
-
-
-
-
         }
     }
-
-
 }

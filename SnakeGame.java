@@ -1,24 +1,25 @@
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.sql.Time;
 import java.util.Scanner;
 
+/**
+ * Class represents instance of snake game. Call constructor to launch game.
+ */
 public class SnakeGame{
     Board board;
     Difficulty difficulty;
     int delay;
     Direction direction;
-    double time;
     Screen screen;
-    int frame;
 
-    public static final char UP = (char)KeyEvent.VK_UP;
-    public static final char DOWN = (char)KeyEvent.VK_DOWN;
-    public static final char LEFT = (char)KeyEvent.VK_LEFT;
-    public static final char RIGHT = (char)KeyEvent.VK_RIGHT;
+    public static final int UP = KeyEvent.VK_UP;
+    public static final int DOWN = KeyEvent.VK_DOWN;
+    public static final int LEFT = KeyEvent.VK_LEFT;
+    public static final int RIGHT = KeyEvent.VK_RIGHT;
+
+    /**
+     * Initialize new snake game.
+     */
     public SnakeGame(){
-        //initialize variables
-        frame = 0;
         //prompt user and take input for board dimensions
         boolean valid = false;
         Scanner scanner = new Scanner(System.in);
@@ -49,7 +50,7 @@ public class SnakeGame{
             System.out.println("Choose difficulty: E => Easy, M => Medium, H => Hard");
             System.out.print("Difficulty: ");
             difficulty = scanner.nextLine();
-            System.out.println("--"+difficulty+"--");
+            difficulty = difficulty.toUpperCase();
             if(difficulty.matches("[EMH]")){
                 valid = true;
                 break;
@@ -57,16 +58,20 @@ public class SnakeGame{
             System.out.println("Invalifd, only type either E, M, or H");
         }
 
-        //set difficulty using (valid) input
-        if(difficulty.equals("E")){
-            this.difficulty = Difficulty.EASY;
-            this.delay = 200;
-        }else if(difficulty.equals("M")){
-            this.difficulty = Difficulty.MEDIUM;
-            this.delay = 100;
-        }else if(difficulty.equals("H")){
-            this.difficulty = Difficulty.HARD;
-            this.delay = 50;
+        //set difficulty using the valid input
+        switch(difficulty){
+            case "E":
+                this.difficulty = Difficulty.EASY;
+                this.delay = 200;
+                break;
+            case "M":
+                this.difficulty = Difficulty.MEDIUM;
+                this.delay = 100;
+                break;
+            case "H":
+                this.difficulty = Difficulty.HARD;
+                this.delay = 50;
+                break;
         }
 
         //create screen
@@ -74,17 +79,17 @@ public class SnakeGame{
 
         //START
         double totalTimeElapsed = 0;
-        boolean stillAlive = true;
+        boolean dead = false;
         long start;
         long fin;
         screen.updateScreen(totalTimeElapsed);
         while(true){
             start = System.currentTimeMillis();
-            if(!board.update(direction, frame)){
+            dead = !board.update(direction);
+            if(dead){
                 break;
             }
             screen.updateScreen(totalTimeElapsed);
-            frame ++;
             fin = System.currentTimeMillis();
             int timeElapsed = (int) (fin - start);
             if(delay >= timeElapsed) {
@@ -101,17 +106,23 @@ public class SnakeGame{
         }
 
     }
+
+    /**
+     * Determines the direction of the head of the snake based off user input.
+     * W and up arrow correspond to UP, A and left arrow correspond to LEFT, S and down arrow correspond to DOWN, and D and right arrow correspond to RIGHT
+     * @param e the event to be processed
+     */
     public void keyPressed(KeyEvent e) {
-        char c = e.getKeyChar();
+        int c = e.getKeyCode();
         if(c == UP || c == DOWN || c == LEFT || c == RIGHT ||
-        c == 'w' || c == 'a' || c == 's' || c == 'd' ){
-            if(c == UP || c == 'w'){
+        c == 'W' || c == 'A' || c == 'S' || c == 'D' ){
+            if(c == UP || c == 'W'){
                 direction = Direction.UP;
-            }else if(c == DOWN || c == 's'){
+            }else if(c == DOWN || c == 'S'){
                 direction = Direction.DOWN;
-            }else if(c == LEFT || c == 'a'){
+            }else if(c == LEFT || c == 'A'){
                 direction = Direction.LEFT;
-            }else if(c == RIGHT || c == 'd'){
+            }else if(c == RIGHT || c == 'D'){
                 direction = Direction.RIGHT;
             }else{
                 throw new IllegalStateException("direction key cannot be anything besides w, a, s, d, up, down, left, right");
